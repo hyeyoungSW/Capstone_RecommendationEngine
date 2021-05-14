@@ -10,7 +10,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def main():
-    return {'helloworld':1}
+    return {'helloworld':'test'}
 
 @app.route('/movie/sentence', methods=['POST'])
 def getMovieBySentence():
