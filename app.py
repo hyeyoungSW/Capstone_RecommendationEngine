@@ -1,16 +1,17 @@
 from flask import Flask, render_template, request
-import getContent
+import recommendBook
+import recommendMovie
 import csv
 import json
 
-movieContent = getContent.Content("movie")
-bookContent = getContent.Content("book")
+movieContent = recommendMovie.Movie()
+bookContent = recommendBook.Book()
 
 app = Flask(__name__)
 
 @app.route('/')
 def main():
-    return {'helloworld':'test'}
+    return {'testpage':'hello world'}
 
 @app.route('/movie/sentence', methods=['POST'])
 def getMovieBySentence():
@@ -18,7 +19,7 @@ def getMovieBySentence():
     goal_sentence = user_status['sentence']
     recommendBySentence = movieContent.recommendByUserSentence(goal_sentence)
     
-    return recommendBySentence
+    return recommendBySentence.to_json(orient="records")
     #return (movieContent.RecommendByReviewEmotion(init_emotion, goal_emotion))
     #return (user_status)
 
@@ -29,16 +30,18 @@ def getMovieByEmotion():
     goal_emotion = json.loads(user_status['goal_emotion']) 
     recommendByEmotion = movieContent.recommendByUserEmotion(init_emotion, goal_emotion)
     
-    return recommendByEmotion
+    return recommendByEmotion.to_json(orient="records")
     #return user_status
 
-@app.route('/movie/content', methods=['POST'])
+@app.route('/movie/content', methods=['POST', 'GET'])
 def getMovieByItemContent():
-    user_status = request.form
-    item_list = json.loads(user_status['selected_movies'])
-    recommendedMovieLists = movieContent.recommendByItemContent(item_list)
+    # user_status = json.loads(request.form)
+    # item_list = user_status["selected_items"]
+    item_list = ["Zack Snyder's Justice League", "Sound of Metal", "The Shawshank Redemption"]
+    recommendedMovieLists = movieContent.recommendByItemContent(item_list, 30)
     
-    return recommendedMovieLists
+    return json.dumps(recommendedMovieLists)
+    #return {1: 1}
 
 # @app.route('/book/sentence', methods=['POST'])
 # def getBookBySentence():
