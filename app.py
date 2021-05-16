@@ -23,15 +23,15 @@ def getMovieBySentence():
     #return (movieContent.RecommendByReviewEmotion(init_emotion, goal_emotion))
     #return (user_status)
 
-@app.route('/movie/emotion', methods=['POST'])
-def getMovieByEmotion():
-    user_status = request.form
-    init_emotion = json.loads(user_status['init_emotion'])
-    goal_emotion = json.loads(user_status['goal_emotion']) 
-    recommendByEmotion = movieContent.recommendByUserEmotion(init_emotion, goal_emotion)
+# @app.route('/movie/emotion', methods=['POST'])
+# def getMovieByEmotion():
+#     user_status = request.form
+#     init_emotion = json.loads(user_status['init_emotion'])
+#     goal_emotion = json.loads(user_status['goal_emotion']) 
+#     recommendByEmotion = movieContent.recommendByUserEmotion(init_emotion, goal_emotion)
     
-    return recommendByEmotion.to_json(orient="records")
-    #return user_status
+#     return recommendByEmotion.to_json(orient="records")
+#     #return user_status
 
 @app.route('/movie/content', methods=['POST', 'GET'])
 def getMovieByItemContent():

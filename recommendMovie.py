@@ -112,7 +112,3 @@ class Movie:
             #return result_genre
         except:
             return error
-
-   # return {1:1}
-
-    # def recommendByDescription(self, title, top):
