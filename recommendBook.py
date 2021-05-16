@@ -79,13 +79,11 @@ class Book:
     def recommendByItemContent(self, items, top):
         try:
             result_description={}
-            # recommend by genre
             for title in items:
             # recommend by description
                 result_description[title] = {'recommend_way' : 'description', 'items' : self.recommendByDescription(title, 10).to_json(orient='records')}
             
             # (optional) sort them by like/dislike counts
             return result_description
-            #return result_genre
         except:
             return error

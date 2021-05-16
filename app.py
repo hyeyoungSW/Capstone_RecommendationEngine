@@ -43,13 +43,12 @@ def getMovieByItemContent():
     return json.dumps(recommendedMovieLists)
     #return {1: 1}
 
-# @app.route('/book/sentence', methods=['POST'])
-# def getBookBySentence():
-#     user_status = request.form 
-#     goal_sentence = user_status['sentence']
-#     recommendBySentence = bookContent.recommendByUserSentence(goal_sentence)
-    
-#     return recommendBySentence
+@app.route('/book/sentence', methods=['POST', 'GET'])
+def getBookBySentence():
+    user_status = request.form 
+    goal_sentence = user_status['sentence']
+    recommendBySentence = bookContent.recommendByUserSentence(goal_sentence)
+    return recommendBySentence.to_json(orient="records")
 
 # @app.route('/book/emotion', methods=['POST'])
 # def getBookByEmotion():
@@ -59,6 +58,15 @@ def getMovieByItemContent():
 #     recommendByEmotion = bookContent.recommendByUserEmotion(init_emotion, goal_emotion)
     
 #     return recommendByEmotion
+
+@app.route('/book/content', methods=['POST', 'GET'])
+def getBookByItemContent():
+    # user_status = json.loads(request.form)
+    # item_list = user_status["selected_items"]
+    item_list = ["Harry Potter and the Half-Blood Prince", "The Lost Continent: Travels in Small Town America"]
+    recommendedBookLists = bookContent.recommendByItemContent(item_list, 30)
+    
+    return json.dumps(recommendedBookLists)
 
 if __name__ == '__main__':
     app.run()
