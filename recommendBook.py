@@ -18,6 +18,7 @@ def setDescriptionSimilarity(description):
 class Book:
     def __init__(self):
         self.content_df = pd.read_csv("final_book_upload_data.csv")
+        self.review_df = pd.read_csv("movie_review_data.csv")
         self.description_similarity = setDescriptionSimilarity(self.content_df['content_description'])
     
     def recommendByUserEmotion(self, init_emotion, goal_emotion):
