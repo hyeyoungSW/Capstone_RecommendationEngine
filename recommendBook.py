@@ -32,17 +32,16 @@ class Book:
             # find the userinitmood -> reviewmood vector
             user_vector_list = user_vector.values.tolist()
 
-            review_emotionDF = pd.DataFrame(data=self.content_df, columns=['review_sadness', 'review_joy', 'review_fear', 'review_disgust', 'review_anger'])
+            review_emotionDF = pd.DataFrame(data=self.review_df, columns=['review_sadness', 'review_joy', 'review_fear', 'review_disgust', 'review_anger'])
             review_vector = pd.DataFrame(user_vector_list*(int)(review_emotionDF.size/5), columns=['review_sadness', 'review_joy', 'review_fear', 'review_disgust', 'review_anger'])
             review_vector = review_emotionDF - review_vector
             cosine_sim = linear_kernel(user_vector, review_vector)
             sim_scores = list(enumerate(cosine_sim[0]))
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-            movie_indices = [i[0] for i in sim_scores[0:2]]
-            closest_items = self.content_df.iloc[movie_indices]
+            book_indices = [i[0] for i in sim_scores[0:2]]
+            closest_items = self.review_df.iloc[book_indices]
 
             return closest_items
-            #closest_items = {self.content_df.iloc[sim_scores[1][0]], self.content_df.iloc[sim_scores[2][0]]}
         except:
             return error
 
