@@ -40,6 +40,7 @@ class Book:
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
             movie_indices = [i[0] for i in sim_scores[0:2]]
             closest_items = self.content_df.iloc[movie_indices]
+
             return closest_items
             #closest_items = {self.content_df.iloc[sim_scores[1][0]], self.content_df.iloc[sim_scores[2][0]]}
         except:
@@ -70,21 +71,22 @@ class Book:
         idx = indices[title]
         sim_scores = list(enumerate(self.description_similarity[idx]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[1:11]
+        sim_scores = sim_scores[1:1+int(top)]
         movie_indices = [i[0] for i in sim_scores]
-
         result = self.content_df.iloc[movie_indices]
 
         return result
 
     def recommendByItemContent(self, items, top):
         try:
-            result_description={}
+            result = pd.DataFrame(columns = ['book_idx', 'content_booktitle', 'content_author', 'content_description', 'description_cluster'])
+
             for title in items:
-            # recommend by description
-                result_description[title] = {'recommend_way' : 'description', 'items' : self.recommendByDescription(title, 10).to_json(orient='records')}
-            
-            # (optional) sort them by like/dislike counts
-            return result_description
+                # recommend by description
+                recommended_list = self.recommendByDescription(title, top)
+                result = pd.concat([result, recommended_list], ignore_index=True)
+
+            result = result.drop_duplicates(subset=['book_idx'])
+            return {"total_count" : len(result), "items" : result.to_json(orient='records')}
         except:
             return error

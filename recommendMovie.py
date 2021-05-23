@@ -1,5 +1,6 @@
 import csv
 from os import error
+from pandas.core.frame import DataFrame
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 from sklearn.feature_extraction.text import CountVectorizer
@@ -78,9 +79,9 @@ class Movie:
     def recommendByGenre(self, title, top):
         search_df = self.content_df[self.content_df['content_movietitle'] == title]
         search_df_index = search_df.index.values
-        similarity_index = self.genre_similarity[search_df_index, :top].reshape(-1)
+        similarity_index = self.genre_similarity[search_df_index, :int(top)].reshape(-1)
         similarity_index = similarity_index[similarity_index != search_df_index]
-        result = self.content_df.iloc[similarity_index][:10]
+        result = self.content_df.iloc[similarity_index][:int(top)]
 
         return result
 
@@ -89,26 +90,23 @@ class Movie:
         idx = indices[title]
         sim_scores = list(enumerate(self.description_similarity[idx]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[1:11]
+        sim_scores = sim_scores[1:1+int(top)]
         movie_indices = [i[0] for i in sim_scores]
-
         result = self.content_df.iloc[movie_indices]
 
         return result
 
     def recommendByItemContent(self, items, top):
         try:
-            result_genre = {}
-            result_description={}
-            # recommend by genre
-            for title in items:
-                result_genre[title] = {'recommend_way': 'genre', 'items': self.recommendByGenre(title, 10).to_json(orient='records')}
+            result_feature = ['movie_idx', 'content_movietitle', 'content_genre', 'content_description', 'review_rating']
+            result = pd.DataFrame(columns = result_feature)
 
-            # recommend by description
-                result_description[title] = {'recommend_way' : 'description', 'items' : self.recommendByDescription(title, 10).to_json(orient='records')}
-            
-            # (optional) sort them by like/dislike counts
-            return result_description
-            #return result_genre
+            for title in items:
+                # recommend by description
+                recommended_list = pd.concat([self.recommendByDescription(title, int(top)/2), self.recommendByGenre(title, int(top)/2)], ignore_index=True)
+                result = pd.concat([result, recommended_list[result_feature]], ignore_index=True)
+
+            result = result.drop_duplicates(subset=['movie_idx'])
+            return {"total_count" : len(result), "items" : result.to_json(orient='records')}
         except:
             return error
