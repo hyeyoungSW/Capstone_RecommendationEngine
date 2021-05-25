@@ -19,8 +19,10 @@ class Book:
     def __init__(self):
         self.content_df = pd.read_csv("final_book_upload_data.csv")
         self.review_df = pd.read_csv("book_review_data.csv")
-        self.description_similarity = setDescriptionSimilarity(self.content_df['content_description'])
-    
+        self.description_similarity = setDescriptionSimilarity(self.content_df['description'])
+        self.feature = ['idx', 'title', 'etc', 'description']
+
+
     def recommendByUserEmotion(self, init_emotion, goal_emotion):
         try:
             user_init = pd.DataFrame([init_emotion])
@@ -41,13 +43,13 @@ class Book:
             book_indices = [i[0] for i in sim_scores[0:2]]
             closest_items = self.review_df.iloc[book_indices]
 
-            return closest_items
+            return closest_items[self.feature]
         except:
             return error
 
     def recommendByUserSentence(self, goal_sentence):
         try:
-            vector_new = self.content_df['content_description'].copy().append(pd.Series([goal_sentence]), ignore_index=True)
+            vector_new = self.content_df['description'].copy().append(pd.Series([goal_sentence]), ignore_index=True)
             tfidf = TfidfVectorizer(stop_words='english')
             tfidf_matrix = tfidf.fit_transform(vector_new)
 
@@ -61,12 +63,12 @@ class Book:
             movie_indices = [i[0] for i in sim_scores[1:3]]
             closest_items = self.content_df.iloc[movie_indices]
             #items = self.content_df.iloc[sim_scores[1][0]]
-            return closest_items
+            return closest_items[self.feature]
         except:
             return error
 
     def recommendByDescription(self, title, top):
-        indices = pd.Series(self.content_df.index, index=self.content_df['content_booktitle'])
+        indices = pd.Series(self.content_df.index, index=self.content_df['title'])
         idx = indices[title]
         sim_scores = list(enumerate(self.description_similarity[idx]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
@@ -74,18 +76,30 @@ class Book:
         movie_indices = [i[0] for i in sim_scores]
         result = self.content_df.iloc[movie_indices]
 
-        return result
+        return result[self.feature]
 
     def recommendByItemContent(self, items, top):
         try:
-            result = pd.DataFrame(columns = ['book_idx', 'content_booktitle', 'content_author', 'content_description', 'description_cluster'])
+            result = pd.DataFrame(columns = self.feature)
 
             for title in items:
                 # recommend by description
                 recommended_list = self.recommendByDescription(title, top)
-                result = pd.concat([result, recommended_list], ignore_index=True)
+                result = pd.concat([result, recommended_list[self.feature]], ignore_index=True)
 
-            result = result.drop_duplicates(subset=['book_idx'])
-            return {"total_count" : len(result), "items" : result.to_json(orient='records')}
+            result = result.drop_duplicates(subset=['idx'])
+            return {"type" : "book", "total_count" : len(result), "items" : result.to_json(orient='records')}
+        except:
+            return error
+
+    def getItemByIndex(self, idx_list):
+        try:
+            result = pd.DataFrame(columns = self.feature)
+
+            for i in idx_list:
+                idx = int(i)
+                item = self.content_df.loc[self.content_df['idx'] == idx]
+                result = pd.concat([result, item[self.feature]], ignore_index=True)
+            return result.to_json(orient='records')
         except:
             return error

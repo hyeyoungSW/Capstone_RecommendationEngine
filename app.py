@@ -39,6 +39,14 @@ def getMovieByItemContent():
 
     return json.dumps(recommendedMovieLists)
 
+@app.route('/movie', methods=['POST'])
+def getMovieByIndex():
+    user_status = request.form.to_dict()
+    idx_list = json.loads(user_status["idx_list"])
+    item_list = movieContent.getItemByIndex(idx_list)
+
+    return json.dumps(item_list)
+
 @app.route('/book/sentence', methods=['POST', 'GET'])
 def getBookBySentence():
     user_status = request.form 
@@ -64,6 +72,14 @@ def getBookByItemContent():
     recommendedBookLists = bookContent.recommendByItemContent(item_list, counts_per_item)
 
     return json.dumps(recommendedBookLists)
+
+@app.route('/book', methods=['POST'])
+def getBookByIndex():
+    user_status = request.form.to_dict()
+    idx_list = json.loads(user_status["idx_list"])
+    item_list = bookContent.getItemByIndex(idx_list)
+
+    return json.dumps(item_list)
 
 if __name__ == '__main__':
     app.run()

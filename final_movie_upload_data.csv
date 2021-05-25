@@ -1,4 +1,4 @@
-movie_idx,content_movietitle,content_genre,content_description,review_rating,review_sadness,review_joy,review_fear,review_disgust,review_anger
+idx,title,etc,description,rating,review_sadness,review_joy,review_fear,review_disgust,review_anger
 0,Zack Snyder's Justice League,"
 Action, Adventure, Fantasy            ","
     Determined to ensure Superman's ultimate sacrifice was not in vain, Bruce Wayne aligns forces with Diana Prince with plans to recruit a team of metahumans to protect the world from an approaching threat of catastrophic proportions.",10,0.101866,0.612359,0.042446,0.031486,0.011162
