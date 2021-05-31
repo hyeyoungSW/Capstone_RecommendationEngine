@@ -43,7 +43,9 @@ def getMovieByItemContent():
 def getMovieByIndex():
     user_status = request.form.to_dict()
     idx_list = json.loads(user_status["idx_list"])
-    item_list = movieContent.getItemByIndex(idx_list)
+    language = json.loads(user_status["language"])
+
+    item_list = movieContent.getItemByIndex(idx_list, language)
 
     return json.dumps(item_list)
 

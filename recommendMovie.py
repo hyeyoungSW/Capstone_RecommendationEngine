@@ -26,8 +26,9 @@ def setDescriptionSimilarity(description):
 class Movie:
     def __init__(self):
         self.content_df = pd.read_csv("final_movie_upload_data.csv")
-        self.content_df['etc'] = self.content_df['etc'].str.split(
-            '\n').str[1].str.replace(" ", "").str.replace(',', " ")
+        # self.content_df['etc'] = self.content_df['etc'].str.split(
+        #     '\n').str[1].str.replace(" ", "").str.replace(',', " ")
+        self.content_kr_df = pd.read_csv("movie_upload_data_ko.csv")
         self.genre_similarity = setGenreSimilarity(self.content_df['etc'])
         self.description_similarity = setDescriptionSimilarity(self.content_df['description'])
         self.feature = ['idx', 'title', 'etc', 'description']
@@ -118,8 +119,8 @@ class Movie:
         except:
             return error
 
-    def getItemByIndex(self, idx_list):
-        try:
+    def getItemByIndex(self, idx_list, language):
+        try:            
             result = pd.DataFrame(columns = self.feature)
 
             for i in idx_list:
