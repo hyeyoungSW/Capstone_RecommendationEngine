@@ -17,8 +17,9 @@ def main():
 def getMovieBySentence():
     user_status = request.form 
     goal_sentence = user_status['sentence']
+    idx_list = json.loads(request.form.to_dict()['idx_list'])
     #language = user_status["language"]
-    recommendBySentence = movieContent.recommendByUserSentence(goal_sentence)
+    recommendBySentence = movieContent.recommendByUserSentence(goal_sentence, idx_list)
     
     return recommendBySentence.to_json(orient="records")
 
@@ -26,8 +27,9 @@ def getMovieBySentence():
 def getMovieByEmotion():
     user_status = request.form
     init_emotion = json.loads(user_status['init_emotion'])
-    goal_emotion = json.loads(user_status['goal_emotion']) 
-    recommendByEmotion = movieContent.recommendByUserEmotion(init_emotion, goal_emotion)
+    goal_emotion = json.loads(user_status['goal_emotion'])
+    idx_list = json.loads(request.form.to_dict()['idx_list'])
+    recommendByEmotion = movieContent.recommendByUserEmotion(init_emotion, goal_emotion, idx_list)
     
     return recommendByEmotion.to_json(orient="records")
 
@@ -50,11 +52,12 @@ def getMovieByIndex():
 
     return json.dumps(item_list)
 
-@app.route('/book/sentence', methods=['POST', 'GET'])
+@app.route('/book/sentence', methods=['POST'])
 def getBookBySentence():
     user_status = request.form 
     goal_sentence = user_status['sentence']
-    recommendBySentence = bookContent.recommendByUserSentence(goal_sentence)
+    idx_list = json.loads(request.form.to_dict()['idx_list'])
+    recommendBySentence = bookContent.recommendByUserSentence(goal_sentence, idx_list)
 
     return recommendBySentence.to_json(orient="records")
 
@@ -63,7 +66,8 @@ def getBookByEmotion():
     user_status = request.form
     init_emotion = json.loads(user_status['init_emotion'])
     goal_emotion = json.loads(user_status['goal_emotion']) 
-    recommendByEmotion = bookContent.recommendByUserEmotion(init_emotion, goal_emotion)
+    idx_list = json.loads(request.form.to_dict()['idx_list'])
+    recommendByEmotion = bookContent.recommendByUserEmotion(init_emotion, goal_emotion, idx_list)
     
     return recommendByEmotion.to_json(orient="records")
 

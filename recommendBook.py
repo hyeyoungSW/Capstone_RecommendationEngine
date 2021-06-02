@@ -23,7 +23,7 @@ class Book:
         self.feature = ['idx', 'title', 'etc', 'description']
 
 
-    def recommendByUserEmotion(self, init_emotion, goal_emotion):
+    def recommendByUserEmotion(self, init_emotion, goal_emotion, idx_list):
         try:
             user_init = pd.DataFrame([init_emotion])
             user_goal = pd.DataFrame([goal_emotion])
@@ -40,16 +40,33 @@ class Book:
             cosine_sim = linear_kernel(user_vector, review_vector)
             sim_scores = list(enumerate(cosine_sim[0]))
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-            book_indices = [i[0] for i in sim_scores[0:2]]
+            #book_indices = [i[0] for i in sim_scores[0:2]]         
+               
+            is_hated = {}
+            for i in idx_list:
+                is_hated[int(i)] = True
+
+            book_indices = []
+
+            for i in sim_scores: 
+                book = self.content_df.iloc[i[0]]
+                book_idx = book['idx']
+                if(int(book_idx) in is_hated): 
+                    continue
+                book_indices.append(i[0])
+                if(len(book_indices) == 2):
+                    break
+
             closest_items = self.review_df.iloc[book_indices]
 
             return closest_items[self.feature]
         except:
             return error
 
-    def recommendByUserSentence(self, goal_sentence):
+    def recommendByUserSentence(self, goal_sentence, idx_list):
         try:
-            vector_new = self.content_df['description'].copy().append(pd.Series([goal_sentence]), ignore_index=True)
+            vector_new = self.content_df['description'].copy()
+            vector_new.loc[len(vector_new)] = goal_sentence
             tfidf = TfidfVectorizer(stop_words='english')
             tfidf_matrix = tfidf.fit_transform(vector_new)
 
@@ -60,8 +77,22 @@ class Book:
             # print(sim_scores)
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-            movie_indices = [i[0] for i in sim_scores[1:3]]
-            closest_items = self.content_df.iloc[movie_indices]
+            is_hated = {}
+            for i in idx_list:
+                is_hated[int(i)] = True
+
+            book_indices = []
+
+            for i in sim_scores[1:]: 
+                book = self.content_df.iloc[i[0]]
+                book_idx = book['idx']
+                if(int(book_idx) in is_hated): 
+                    continue
+                book_indices.append(i[0])
+                if(len(book_indices) == 2):
+                    break
+
+            closest_items = self.content_df.iloc[book_indices]
             #items = self.content_df.iloc[sim_scores[1][0]]
             return closest_items[self.feature]
         except:
