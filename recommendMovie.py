@@ -28,7 +28,6 @@ class Movie:
         self.content_df = pd.read_csv("new_final_movie_upload_data_encoding.csv")
         # self.content_df['etc'] = self.content_df['etc'].str.split(
         #     '\n').str[1].str.replace(" ", "").str.replace(',', " ")
-        self.content_kr_df = pd.read_csv("movie_upload_data_ko.csv")
         self.genre_similarity = setGenreSimilarity(self.content_df['etc'])
         self.description_similarity = setDescriptionSimilarity(self.content_df['description'])
         self.en_feature = ['idx', 'title_en', 'etc', 'description_en']
@@ -51,8 +50,9 @@ class Movie:
             review_vector = review_emotionDF - review_vector
             cosine_sim = linear_kernel(user_vector, review_vector)
             print(cosine_sim[0])
-            print(cosine_sim[0])
+            print ("\n---------\n")
             sim_scores = list(enumerate(cosine_sim[0]))
+            print(sim_scores)
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
             movie_indices = [i[0] for i in sim_scores[0:2]]
             closest_items = self.content_df.iloc[movie_indices]
@@ -85,19 +85,19 @@ class Movie:
 
     def recommendByGenre(self, title, top):
         try:
-            search_df = self.content_df[self.content_df['title_en'] == title]
+            search_df = self.content_df[self.content_df['title'] == title]
             search_df_index = search_df.index.values
             similarity_index = self.genre_similarity[search_df_index, :int(top)].reshape(-1)
             similarity_index = similarity_index[similarity_index != search_df_index]
             result = self.content_df.iloc[similarity_index][:int(top)]
 
-            return result[self.en_feature]
+            return result[self.kr_feature]
         except:
             return error
 
     def recommendByDescription(self, title, top):
         try:
-            indices = pd.Series(self.content_df.index, index=self.content_df['title_en'])
+            indices = pd.Series(self.content_df.index, index=self.content_df['title'])
             idx = indices[title]
             sim_scores = list(enumerate(self.description_similarity[idx]))
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
@@ -105,18 +105,18 @@ class Movie:
             movie_indices = [i[0] for i in sim_scores]
             result = self.content_df.iloc[movie_indices]
 
-            return result[self.en_feature]
+            return result[self.kr_feature]
         except:
             return error
 
     def recommendByItemContent(self, items, top):
         try:
-            result = pd.DataFrame(columns = self.en_feature)
+            result = pd.DataFrame(columns = self.kr_feature)
 
             for title in items:
                 # recommend by description
                 recommended_list = pd.concat([self.recommendByDescription(title, int(top)/2), self.recommendByGenre(title, int(top)/2)], ignore_index=True)
-                result = pd.concat([result, recommended_list[self.en_feature]], ignore_index=True)
+                result = pd.concat([result, recommended_list[self.kr_feature]], ignore_index=True)
 
             result = result.drop_duplicates(subset=['idx'])
             return {"type":"movie", "total_count" : len(result), "items" : result.to_json(orient='records')}
