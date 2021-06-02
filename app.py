@@ -17,6 +17,7 @@ def main():
 def getMovieBySentence():
     user_status = request.form 
     goal_sentence = user_status['sentence']
+    #language = user_status["language"]
     recommendBySentence = movieContent.recommendByUserSentence(goal_sentence)
     
     return recommendBySentence.to_json(orient="records")
@@ -43,9 +44,9 @@ def getMovieByItemContent():
 def getMovieByIndex():
     user_status = request.form.to_dict()
     idx_list = json.loads(user_status["idx_list"])
-    language = json.loads(user_status["language"])
+    #language = json.loads(user_status["language"])
 
-    item_list = movieContent.getItemByIndex(idx_list, language)
+    item_list = movieContent.getItemByIndex(idx_list)
 
     return json.dumps(item_list)
 
