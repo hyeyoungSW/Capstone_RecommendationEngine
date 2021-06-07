@@ -40,8 +40,8 @@ class Movie:
             user_goal = pd.DataFrame([goal_emotion])
 
             # find the userinitmood -> usergoalmood vector
-            user_vector = user_goal - user_init
-
+            #user_vector = user_goal - user_init
+            user_vector = user_goal
             # find the userinitmood -> reviewmood vector
             user_vector_list = user_vector.values.tolist()
 
