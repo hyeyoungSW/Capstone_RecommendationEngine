@@ -64,7 +64,7 @@ class Movie:
                 if(int(i[0]) in is_hated): 
                     continue
                 movie_indices.append(i[0])
-                if(len(movie_indices) == 2):
+                if(len(movie_indices) == 4):
                     break
                 
             closest_items = self.content_df.iloc[movie_indices]
@@ -148,12 +148,12 @@ class Movie:
 
     def getItemByIndex(self, idx_list):
         try:            
-            result = pd.DataFrame(columns = self.en_feature)
+            result = pd.DataFrame(columns = self.kr_feature)
 
             for i in idx_list:
                 idx = int(i)
                 item = self.content_df.loc[self.content_df['idx'] == idx]
-                result = pd.concat([result, item[self.en_feature]], ignore_index=True)
+                result = pd.concat([result, item[self.kr_feature]], ignore_index=True)
             return result.to_json(orient='records')
         except:
             return error

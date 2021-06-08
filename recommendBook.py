@@ -54,7 +54,7 @@ class Book:
                 if(int(book_idx) in is_hated): 
                     continue
                 book_indices.append(i[0])
-                if(len(book_indices) == 2):
+                if(len(book_indices) == 4):
                     break
 
             closest_items = self.review_df.iloc[book_indices]
