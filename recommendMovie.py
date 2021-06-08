@@ -40,20 +40,19 @@ class Movie:
             user_goal = pd.DataFrame([goal_emotion])
 
             # find the userinitmood -> usergoalmood vector
-            #user_vector = user_goal - user_init
             user_vector = user_goal
+
             # find the userinitmood -> reviewmood vector
             user_vector_list = user_vector.values.tolist()
 
             review_emotionDF = pd.DataFrame(data=self.content_df, columns=['review_sadness', 'review_joy', 'review_fear', 'review_disgust', 'review_anger'])
-            review_vector = pd.DataFrame(user_vector_list*(int)(review_emotionDF.size/5), columns=['review_sadness', 'review_joy', 'review_fear', 'review_disgust', 'review_anger'])
-            review_vector = review_emotionDF - review_vector
+            #review_vector = pd.DataFrame(user_vector_list*(int)(review_emotionDF.size/5), columns=['review_sadness', 'review_joy', 'review_fear', 'review_disgust', 'review_anger'])
+            #review_vector = review_emotionDF - review_vector
+            
+            review_vector = review_emotionDF #changed
             cosine_sim = linear_kernel(user_vector, review_vector)
-            # print(cosine_sim[0])
-            # print ("\n---------\n")
             sim_scores = list(enumerate(cosine_sim[0]))
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-            # print(sim_scores)
 
             is_hated = {}
             for i in idx_list:

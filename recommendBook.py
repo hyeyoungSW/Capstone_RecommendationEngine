@@ -35,8 +35,9 @@ class Book:
             user_vector_list = user_vector.values.tolist()
 
             review_emotionDF = pd.DataFrame(data=self.review_df, columns=['review_sadness', 'review_joy', 'review_fear', 'review_disgust', 'review_anger'])
-            review_vector = pd.DataFrame(user_vector_list*(int)(review_emotionDF.size/5), columns=['review_sadness', 'review_joy', 'review_fear', 'review_disgust', 'review_anger'])
-            review_vector = review_emotionDF - review_vector
+            # review_vector = pd.DataFrame(user_vector_list*(int)(review_emotionDF.size/5), columns=['review_sadness', 'review_joy', 'review_fear', 'review_disgust', 'review_anger'])
+            # review_vector = review_emotionDF - review_vector
+            review_vector = review_emotionDF
             cosine_sim = linear_kernel(user_vector, review_vector)
             sim_scores = list(enumerate(cosine_sim[0]))
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
@@ -72,9 +73,7 @@ class Book:
 
             cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
             idx = vector_new.size-1
-            # print(cosine_sim.shape)
             sim_scores = list(enumerate(cosine_sim[idx]))
-            # print(sim_scores)
             sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
             is_hated = {}
@@ -93,7 +92,6 @@ class Book:
                     break
 
             closest_items = self.content_df.iloc[book_indices]
-            #items = self.content_df.iloc[sim_scores[1][0]]
             return closest_items[self.feature]
         except:
             return error
